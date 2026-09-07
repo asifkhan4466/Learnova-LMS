@@ -1,0 +1,16 @@
+import { useState } from "react";
+import useBatches from "../utils/useBatches";
+import useCourses from "../utils/useCourses";
+import { usePeople } from "../utils/peopleStorage";
+import { createManagedBatch, placeApprovedEnrollment, activateBatch } from "../utils/batchStorage";
+import "./ManagementCards.css";
+export default function EnrollmentGroups({role, batchesOnly=false}) {
+ const state=useBatches(),courses=useCourses(),teachers=usePeople();const [message,setMessage]=useState("");
+ const [form,setForm]=useState({name:"",courseId:"",teacherId:"",startDate:"",endDate:""});
+ function run(fn){try{fn();setMessage("Saved successfully.");}catch(error){setMessage(error.message);}}
+ const approved=state.enrollments.filter(e=>e.approved === true && (batchesOnly || e.status === "Active"));
+ return <section className="management-card"><h2>{batchesOnly ? "Create Batch & Assign Instructor":"Approved Enrollments"}</h2>
+ {batchesOnly ? <form onSubmit={e=>{e.preventDefault();run(()=>{createManagedBatch(form,role);setForm({name:"",courseId:"",teacherId:"",startDate:"",endDate:""});});}}><div className="management-grid"><label>Batch Name<input required placeholder="Batch 6" value={form.name} onChange={e=>setForm({...form,name:e.target.value})}/></label><label>Course<select required value={form.courseId} onChange={e=>setForm({...form,courseId:e.target.value})}><option value="">Select course</option>{courses.map(c=><option key={c.id} value={c.id}>{c.title}</option>)}</select></label><label>Instructor<select required value={form.teacherId} onChange={e=>setForm({...form,teacherId:e.target.value})}><option value="">Select instructor</option>{teachers.filter(t=>t.status==="Active").map(t=><option key={t.id} value={t.id}>{t.name}</option>)}</select></label>{["startDate","endDate"].map(key=><label key={key}>{key}<input type="date" value={form[key]} onChange={e=>setForm({...form,[key]:e.target.value})}/></label>)}</div><button>Create Batch</button></form> : <div className="approved-enrollments-table" tabIndex="0" aria-label="Approved enrollments"><table><thead><tr><th scope="col">Name</th><th scope="col">Course / Program</th><th scope="col">Batch</th></tr></thead><tbody>{approved.map(e=><tr key={e.id}><td>{e.student}</td><td>{e.course}</td><td>{e.batchId ? e.batch : <select aria-label={`Assign batch for ${e.student}`} value="" onChange={event=>run(()=>placeApprovedEnrollment(e.id,event.target.value,role))}><option value="">Assign batch</option>{state.batches.filter(b=>b.courseId===e.courseId && b.status!=="Completed").map(b=><option key={b.id} value={b.id}>{b.name} &middot; {b.teacher}</option>)}</select>}</td></tr>)}{!approved.length && <tr><td colSpan={3}>No approved enrollments yet.</td></tr>}</tbody></table></div>}
+
+ {batchesOnly && <div className="management-grid">{state.batches.map(b=><article key={b.id}><strong>{b.name} ? {b.course}</strong><small>{b.teacher} ? {b.status}</small>{approved.filter(e=>e.batchId===b.id && e.courseId===b.courseId).map(e=><p key={e.id}>{e.student}</p>)}{!approved.some(e=>e.batchId===b.id) && <p>No approved students assigned.</p>}{role==="admin" && b.status==="Upcoming" && <button onClick={()=>run(()=>activateBatch(b.id,role))}>Start Batch</button>}</article>)}</div>}{message && <p role="status">{message}</p>}</section>;
+}
