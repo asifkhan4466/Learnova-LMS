@@ -1,0 +1,702 @@
+/* COURSE DETAILS PAGE STYLES */
+.course-hero-banner {
+  background: linear-gradient(135deg, #001233 0%, #001e55 100%);
+  color: #ffffff;
+  padding: 32px 0 48px;
+}
+
+.course-breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.crumb-sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.crumb-current {
+  color: #ffffff;
+  font-weight: 600;
+  max-width: 320px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.course-hero-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 48px;
+}
+
+.course-hero-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.hero-pill-badge {
+  background: #fef08a;
+  color: #854d0e;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  text-transform: uppercase;
+}
+
+.hero-pill-level {
+  background: rgba(255, 255, 255, 0.15);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: var(--radius-sm);
+}
+
+.hero-pill-org {
+  font-size: 13px;
+  font-weight: 600;
+  color: #93c5fd;
+}
+
+.course-details-title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.25;
+  margin-bottom: 14px;
+  letter-spacing: -0.5px;
+}
+
+.course-details-subtitle {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.course-hero-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.hero-meta-students, .hero-meta-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.meta-sep {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.course-hero-instructor {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.hero-instructor-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid #ffffff;
+}
+
+.taught-by {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.instructor-title-name {
+  font-size: 14px;
+  color: #ffffff;
+}
+
+/* Floating Enrollment Card */
+.course-enrollment-card-wrapper {
+  position: relative;
+}
+
+.enrollment-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.enrollment-card-media {
+  position: relative;
+  width: 100%;
+  padding-top: 56.25%;
+  background: #0f172a;
+}
+
+.enrollment-card-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.play-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.play-overlay:hover {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.play-icon {
+  margin-bottom: 6px;
+  color: #ffffff;
+}
+
+.enrollment-card-body {
+  padding: 24px;
+}
+
+.enrollment-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.price-stack {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.current-price {
+  font-size: 28px;
+  font-weight: 900;
+  color: var(--color-primary-navy);
+}
+
+.old-price {
+  font-size: 16px;
+  color: var(--text-light);
+  text-decoration: line-through;
+}
+
+.discount-pill {
+  background: #fee2e2;
+  color: #b91c1c;
+  font-size: 12px;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.btn-enroll-primary {
+  width: 100%;
+  height: 48px;
+  background: var(--color-primary-blue);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-enroll-primary:hover {
+  background: var(--color-primary-blue-hover);
+  box-shadow: 0 4px 12px rgba(19, 102, 247, 0.3);
+}
+
+.btn-enroll-primary.enrolled {
+  background: var(--color-success-green);
+}
+
+.guarantee-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 12px;
+}
+
+.enrollment-includes-list {
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-light);
+}
+
+.enrollment-includes-list h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  margin-bottom: 12px;
+}
+
+.enrollment-includes-list ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.enrollment-includes-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Course Details Main Content */
+.course-details-container {
+  padding-top: 48px;
+  padding-bottom: 64px;
+}
+
+.course-details-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 48px;
+}
+
+.course-details-main-column {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.details-section-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary-navy);
+  margin-bottom: 18px;
+}
+
+/* What You Will Learn Card */
+.learn-box-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  box-shadow: var(--shadow-sm);
+}
+
+.learn-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px 24px;
+}
+
+.learn-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--text-main);
+  line-height: 1.45;
+}
+
+/* Skills Chips */
+.skills-chips-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.skill-badge-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.description-text p {
+  font-size: 15px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 14px;
+}
+
+/* Curriculum Accordion */
+.curriculum-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.curriculum-meta {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-top: 4px;
+}
+
+.curriculum-toggles {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-text-toggle {
+  background: none;
+  border: none;
+  color: var(--color-primary-blue);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.toggle-sep {
+  color: var(--border-light);
+}
+
+.curriculum-accordion {
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.accordion-module {
+  border-bottom: 1px solid var(--border-light);
+}
+
+.accordion-module:last-child {
+  border-bottom: none;
+}
+
+.accordion-module-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #ffffff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.accordion-module-header:hover {
+  background: var(--bg-surface);
+}
+
+.module-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.accordion-chevron {
+  color: var(--text-light);
+}
+
+.module-title-text {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.module-duration-badge {
+  font-size: 12px;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.accordion-module-body {
+  background: var(--bg-surface);
+  border-top: 1px solid var(--border-light);
+  padding: 8px 20px;
+}
+
+.lessons-list {
+  list-style: none;
+}
+
+.lesson-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  font-size: 13px;
+}
+
+.lesson-item:last-child {
+  border-bottom: none;
+}
+
+.lesson-name-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-main);
+}
+
+.lesson-play-icon {
+  color: var(--color-primary-blue);
+}
+
+.lesson-duration {
+  color: var(--text-light);
+}
+
+/* Prerequisites */
+.prerequisites-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.prerequisites-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.req-check {
+  color: var(--color-primary-blue);
+}
+
+/* Instructor Full Card */
+.instructor-full-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 28px;
+  display: flex;
+  gap: 24px;
+}
+
+.instructor-large-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.instructor-card-info h3 {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--color-primary-navy);
+  margin-bottom: 4px;
+}
+
+.instructor-card-role {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-primary-blue);
+}
+
+.instructor-card-inst {
+  font-size: 13px;
+  color: var(--text-light);
+  margin-bottom: 12px;
+}
+
+.instructor-quick-stats {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: var(--bg-surface);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-main);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+}
+
+.instructor-card-bio {
+  font-size: 14px;
+  color: var(--text-muted);
+  line-height: 1.55;
+}
+
+/* Reviews Score Breakdown */
+.reviews-score-card {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-md);
+  padding: 32px;
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 36px;
+  align-items: center;
+}
+
+.score-big-column {
+  text-align: center;
+  border-right: 1px solid var(--border-light);
+  padding-right: 24px;
+}
+
+.big-rating-number {
+  font-size: 54px;
+  font-weight: 900;
+  color: #b45309;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.score-total-reviews {
+  font-size: 12px;
+  color: var(--text-light);
+  margin-top: 8px;
+}
+
+.score-bars-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rating-bar-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.bar-star-label {
+  width: 50px;
+  color: var(--text-muted);
+}
+
+.bar-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-surface);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: #f59e0b;
+  border-radius: 4px;
+}
+
+.bar-percent {
+  width: 35px;
+  text-align: right;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+/* Related Courses Section */
+.section-related-courses {
+  margin-top: 56px;
+  padding-top: 48px;
+  border-top: 1px solid var(--border-light);
+}
+
+/* Enrollment Success Modal */
+.enroll-modal-card {
+  width: 100%;
+  max-width: 480px;
+  background: #ffffff;
+  border-radius: var(--radius-lg);
+  padding: 36px;
+  text-align: center;
+  box-shadow: var(--shadow-xl);
+}
+
+.enroll-modal-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.enroll-modal-card h3 {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--color-primary-navy);
+  margin-bottom: 8px;
+}
+
+.enroll-modal-card p {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 24px;
+}
+
+.modal-course-summary {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  background: var(--bg-surface);
+  padding: 14px;
+  border-radius: var(--radius-md);
+  margin-bottom: 24px;
+}
+
+.summary-thumb {
+  width: 72px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.modal-course-summary h4 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-main);
+  line-height: 1.3;
+}
+
+.modal-course-summary p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 2px 0 4px;
+}
+
+.summary-badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--color-primary-blue);
+}

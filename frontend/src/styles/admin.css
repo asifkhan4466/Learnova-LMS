@@ -1,0 +1,955 @@
+/* ==========================================================================
+   LEARNOVA ADMIN CONSOLE DESIGN SYSTEM & STYLES
+   ========================================================================== */
+
+/* 1. Shell & Layout */
+.admin-lms-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+  color: var(--text-main, #1e293b);
+  font-family: var(--font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+}
+
+/* 2. Admin Sidebar */
+.admin-sidebar {
+  width: 270px;
+  background-color: #090d16;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 600;
+  padding: 20px 16px;
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.25s ease;
+  overflow: hidden;
+}
+
+.sidebar-portal-badge.admin {
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.35);
+  padding: 3px 8px;
+  border-radius: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* System Health Monitor Widget in Sidebar */
+.admin-system-health-chip {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: 8px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 10px 0;
+}
+
+.pulse-green-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  animation: adminPulse 2s infinite;
+  flex-shrink: 0;
+}
+
+@keyframes adminPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.health-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #34d399;
+  display: block;
+}
+
+.health-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  display: block;
+}
+
+/* Categorized Scrollable Nav */
+.admin-nav-sections-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 4px;
+  margin-top: 6px;
+}
+
+.admin-nav-sections-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.admin-nav-sections-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.admin-nav-section-group {
+  margin-bottom: 18px;
+}
+
+.admin-nav-section-title {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255, 255, 255, 0.45);
+  padding: 0 12px;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.admin-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.admin-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.admin-nav-item.active {
+  background: rgba(16, 185, 129, 0.16);
+  color: #34d399;
+  font-weight: 600;
+  border-left: 3px solid #10b981;
+}
+
+.admin-nav-icon {
+  color: currentColor;
+  opacity: 0.9;
+  flex-shrink: 0;
+}
+
+.admin-nav-label {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-nav-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+/* 3. Main Wrapper & Header */
+.admin-main-wrapper {
+  flex: 1;
+  margin-left: 270px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-top-navbar {
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 14px 28px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 500;
+}
+
+.admin-global-search {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 14px;
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+  transition: border-color 0.2s;
+}
+
+.admin-global-search:focus-within {
+  border-color: #10b981;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.12);
+}
+
+.admin-global-search input {
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  width: 100%;
+  outline: none;
+  color: #1e293b;
+}
+
+.admin-telemetry-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.telemetry-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #10b981;
+}
+
+.notification-indicator-dot.admin,
+.notif-dot.admin {
+  background-color: #10b981 !important;
+}
+
+.top-admin-profile-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  padding: 4px 10px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.top-admin-profile-chip:hover {
+  background: #f1f5f9;
+}
+
+.top-avatar.admin-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #10b981;
+}
+
+.top-admin-info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-content-container {
+  padding: 28px;
+  flex: 1;
+}
+
+/* 4. Telemetry Top Banner */
+.admin-telemetry-banner {
+  background: linear-gradient(135deg, #090d16 0%, #0f172a 60%, #132438 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 26px 30px;
+  margin-bottom: 26px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.2);
+}
+
+.telemetry-badge-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+  margin-bottom: 10px;
+}
+
+.admin-telemetry-banner h1 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  margin-bottom: 6px;
+}
+
+.telemetry-sub {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.75);
+  max-width: 640px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.telemetry-metrics-strip {
+  display: flex;
+  gap: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 14px 20px;
+  border-radius: 10px;
+  backdrop-filter: blur(4px);
+  flex-shrink: 0;
+}
+
+.telemetry-metric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+}
+
+.telemetry-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #34d399;
+}
+
+.telemetry-lbl {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+/* 5. KPI Metrics Grid */
+.admin-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 18px;
+  margin-bottom: 26px;
+}
+
+.admin-kpi-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  border-radius: 12px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-kpi-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.kpi-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpi-icon-wrap.emerald {
+  background: #ecfdf5;
+  color: #059669;
+}
+.kpi-icon-wrap.indigo {
+  background: #e0e7ff;
+  color: #4f46e5;
+}
+.kpi-icon-wrap.blue {
+  background: #e0f2fe;
+  color: #0284c7;
+}
+.kpi-icon-wrap.amber {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.kpi-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.kpi-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+  line-height: 1.2;
+}
+
+.kpi-lbl {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.kpi-trend {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #10b981;
+  margin-top: 3px;
+}
+
+/* 6. Admin Split Grid & Cards */
+.admin-split-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.lms-content-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.card-top-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.card-top-title-row h3 {
+  font-size: 17px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.card-action-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: #10b981;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.card-action-link:hover {
+  text-decoration: underline;
+}
+
+/* 7. Departments Grid */
+.admin-dept-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.admin-dept-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-dept-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+.dept-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.dept-code-badge {
+  font-size: 11.5px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  letter-spacing: 0.5px;
+}
+
+.dept-stats-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  background: #f8fafc;
+  padding: 12px;
+  border-radius: 8px;
+  margin: 16px 0;
+  text-align: center;
+}
+
+.dept-stat-box .d-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  display: block;
+}
+
+.dept-stat-box .d-lbl {
+  font-size: 11px;
+  color: #64748b;
+  display: block;
+  margin-top: 2px;
+}
+
+/* 8. Programs Grid */
+.admin-programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.admin-program-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.admin-program-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* 9. Announcements Stack */
+.announcements-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.announcement-card-admin {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.announcement-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.priority-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.priority-tag.urgent {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+.priority-tag.high {
+  background: #fef3c7;
+  color: #b45309;
+}
+.priority-tag.standard {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+/* 10. Audit Logs & Chips */
+.audit-action-chip {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  color: #0f172a;
+  display: inline-block;
+}
+
+.audit-id-badge {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+/* 11. Settings & Forms Stack */
+.settings-forms-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.form-fields-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 18px;
+}
+
+.toggle-switch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.toggle-switch-row:last-child {
+  border-bottom: none;
+}
+
+/* 12. Badges, Chips & Highlights */
+.text-emerald {
+  color: #10b981 !important;
+}
+.text-amber {
+  color: #f59e0b !important;
+}
+.text-red {
+  color: #ef4444 !important;
+}
+.text-indigo {
+  color: #6366f1 !important;
+}
+
+.profile-hero-avatar.admin-avatar {
+  border: 3px solid #10b981 !important;
+}
+
+.profile-online-badge.admin {
+  background: #10b981 !important;
+}
+
+.profile-role-badge.admin {
+  background: rgba(16, 185, 129, 0.15) !important;
+  color: #059669 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+}
+
+/* 13. Admin Dashboard Tasks & Two-Col Grid */
+.admin-two-col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 22px;
+  margin-bottom: 26px;
+}
+
+.admin-task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.admin-approval-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  gap: 14px;
+  transition: border-color 0.2s;
+}
+
+.admin-approval-item:hover {
+  border-color: #cbd5e1;
+}
+
+.approval-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.approval-cat-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: #10b981;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.approval-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.approval-instructor {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.approval-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.approval-teacher-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link-view-all {
+  font-size: 13px;
+  font-weight: 600;
+  color: #10b981;
+  text-decoration: none;
+}
+
+.link-view-all:hover {
+  text-decoration: underline;
+}
+
+/* 14. Vetting Details & Action Buttons */
+.vetting-details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  background: #f8fafc;
+  padding: 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+}
+
+.vetting-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.vetting-item span {
+  font-size: 11.5px;
+  color: #64748b;
+}
+
+.vetting-item strong {
+  font-size: 13.5px;
+  color: #0f172a;
+}
+
+.table-action-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f1f5f9;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-action-icon:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.btn-action-icon.danger {
+  color: #ef4444;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.btn-action-icon.danger:hover {
+  background: #fee2e2;
+}
+
+.btn-action-icon.success {
+  color: #10b981;
+  border-color: #a7f3d0;
+  background: #ecfdf5;
+}
+
+.btn-action-icon.success:hover {
+  background: #d1fae5;
+}
+
+.table-subtext,
+.table-sub-detail {
+  display: block;
+  font-size: 11.5px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.course-ref-text {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.telemetry-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 12px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  display: inline-block;
+}
+
+.table-progress-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 130px;
+}
+
+.lms-progress-track {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.lms-progress-fill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 3px;
+}
+
+.progress-num {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #64748b;
+  min-width: 32px;
+}
+
+/* 13. Responsive Breakpoints */
+@media (max-width: 1024px) {
+  .admin-sidebar {
+    transform: translateX(-100%);
+  }
+
+  .admin-sidebar.open {
+    transform: translateX(0);
+  }
+
+  .admin-main-wrapper {
+    margin-left: 0;
+  }
+
+  .admin-split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-telemetry-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .telemetry-metrics-strip {
+    width: 100%;
+    justify-content: space-around;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-top-navbar {
+    padding: 12px 16px;
+  }
+
+  .admin-content-container {
+    padding: 16px;
+  }
+
+  .admin-global-search {
+    max-width: 240px;
+  }
+
+  .top-admin-info-text,
+  .admin-telemetry-badge {
+    display: none;
+  }
+
+  .telemetry-metrics-strip {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-dept-grid,
+  .admin-programs-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
