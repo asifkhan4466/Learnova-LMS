@@ -141,6 +141,17 @@ export function getBatchState() {
   try { text = localStorage.getItem(BATCH_STORAGE_KEY); } catch { /* In-memory fallback. */ }
   if (cachedState && text === cachedText) return cachedState;
   try {
+    if (text === null) {
+      const initial = initialState();
+      const initialText = JSON.stringify(initial);
+      try {
+        localStorage.setItem(BATCH_STORAGE_KEY, initialText);
+        text = initialText;
+      } catch { /* The in-memory initial state remains usable. */ }
+      cachedState = initial;
+      cachedText = text ?? "__initial__";
+      return cachedState;
+    }
     const saved = JSON.parse(text);
     if (!["batches", "enrollments", "classes", "materials"].every(key => Array.isArray(saved?.[key]))) throw new Error();
     const sanitized = sanitizeState({
@@ -161,8 +172,10 @@ export function getBatchState() {
     cachedState = sanitized;
     cachedText = text;
   } catch {
-    cachedState = initialState();
-    cachedText = undefined;
+    if (!cachedState) {
+      cachedState = initialState();
+    }
+    cachedText = text;
   }
   return cachedState;
 }
@@ -233,14 +246,18 @@ export function studentClasses(state, id = studentId) {
 }
 
 export function teacherCourses(catalog, id = teacherId) {
+  if (!Array.isArray(catalog)) return [];
   const name = getTeachers().find(teacher => teacher.id === id)?.name;
-  return catalog.filter(course => getBatchState().batches.some(b => b.teacherId === id && b.courseId === course.id) || (course.instructorId ? course.instructorId === id : !!name && course.instructor === name));
+  const currentBatches = getBatchState()?.batches;
+  const batchesList = Array.isArray(currentBatches) ? currentBatches : [];
+  return catalog.filter(course => course && (batchesList.some(b => b?.teacherId === id && b?.courseId === course.id) || (course.instructorId ? course.instructorId === id : !!name && course.instructor === name)));
 }
 
 export function teacherStudents(state, id = teacherId) {
   const assigned = teacherBatches(state, id);
-  return state.enrollments.filter(item => item.approved === true && ["Active", "Completed"].includes(item.status)
-    && assigned.some(batch => batch.id === item.batchId && batch.courseId === item.courseId))
+  const enrollmentsList = Array.isArray(state?.enrollments) ? state.enrollments : [];
+  return enrollmentsList.filter(item => item?.approved === true && ["Active", "Completed"].includes(item?.status)
+    && assigned.some(batch => batch?.id === item.batchId && batch?.courseId === item.courseId))
     .map(item => {
       const student = students.find(student => student.id === item.studentId);
       return { ...item, name: item.student || student?.name || item.studentId, email: student?.email || "",
@@ -250,12 +267,15 @@ export function teacherStudents(state, id = teacherId) {
 
 export function teacherBatches(state, id = teacherId) {
   const catalog = getCourses();
-  return state.batches.filter(batch => batch.teacherId === id && catalog.some(course => course.id === batch.courseId));
+  const batchesList = Array.isArray(state?.batches) ? state.batches : [];
+  const catalogList = Array.isArray(catalog) ? catalog : [];
+  return batchesList.filter(batch => batch?.teacherId === id && catalogList.some(course => course?.id === batch.courseId));
 }
 
 export function teacherClasses(state, id = teacherId) {
   const assigned = teacherBatches(state, id);
-  return state.classes.filter(item => item.teacherId === id && assigned.some(batch => batch.id === item.batchId && batch.courseId === item.courseId));
+  const classesList = Array.isArray(state?.classes) ? state.classes : [];
+  return classesList.filter(item => item?.teacherId === id && assigned.some(batch => batch?.id === item.batchId && batch?.courseId === item.courseId));
 }
 
 export function startClass(id, assignedTeacher = teacherId) {

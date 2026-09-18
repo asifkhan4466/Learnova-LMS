@@ -6,14 +6,15 @@ import useLiveWebRTC from "../../utils/useLiveWebRTC";
 import "../teacher/LiveRoom.css";
 
 export default function LiveRoom({ role = "Admin" }) {
-  const { id } = useParams();
+  const { id, classId } = useParams();
+  const targetId = classId || id;
   const navigate = useNavigate();
   const state = useBatches();
-  const liveClass = state.classes.find(item => item.id === id);
+  const liveClass = state.classes.find(item => item.id === targetId);
   const [now, setNow] = useState(0);
   const [message, setMessage] = useState("");
   const active = liveClass && classStatus(liveClass, state) === "Live";
-  const webrtc = useLiveWebRTC({ classId: id, role: "monitor", active, message: setMessage });
+  const webrtc = useLiveWebRTC({ classId: targetId, role: "monitor", active, message: setMessage });
 
   useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 1000);

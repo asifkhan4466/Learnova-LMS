@@ -67,6 +67,7 @@ import SubAdminCertificates from "./pages/subadmin/Certificates";
 import SubAdminReports from "./pages/subadmin/Reports";
 import SubAdminNotifications from "./pages/subadmin/Notifications";
 import SubAdminProfile from "./pages/subadmin/Profile";
+import SubAdminPublicContent from "./pages/subadmin/PublicContent";
 import MonitorLiveRoom from "./pages/monitoring/LiveRoom";
 
 import "./App.css";
@@ -115,6 +116,7 @@ function App() {
           <Route path="payments" element={<AdminPayments />} />
           <Route path="live-classes" element={<AdminLiveClasses />} />
           <Route path="live-classes/:id" element={<MonitorLiveRoom role="Admin" />} />
+          <Route path="live-classes/:classId" element={<MonitorLiveRoom role="Admin" />} />
           <Route path="content" element={<AdminLecturesContent />} />
           <Route path="assignments" element={<AdminAssignments />} />
           <Route path="certificates" element={<AdminCertificates />} />
@@ -128,6 +130,7 @@ function App() {
 
           <Route path="public-content" element={<AdminPublicContent />} />
           <Route path="subadmin-permissions" element={<AdminSubAdminPermissions />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
 
         {/* Public Pages */}
@@ -391,6 +394,7 @@ function App() {
             element={<SubAdminLiveClasses />}
           />
           <Route path="live-classes/:id" element={<MonitorLiveRoom role="Sub Admin" />} />
+          <Route path="live-classes/:classId" element={<MonitorLiveRoom role="Sub Admin" />} />
           <Route
             path="content"
             element={<SubAdminContent />}
@@ -403,8 +407,16 @@ function App() {
             path="reports"
             element={<SubAdminReports />}
           />
+          <Route
+            path="public-content"
+            element={<SubAdminPublicContent />}
+          />
+          <Route path="*" element={<Navigate to="/subadmin/dashboard" replace />} />
         </Route>
-        </Routes>
+
+        {/* Catch-all fallback for unknown public routes */}
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
 
       
 

@@ -39,9 +39,30 @@ export function subscribePermissions(listener) {
 
 export function readAdminPermissions(snapshot = permissionSnapshot()) {
   try {
-    const saved = JSON.parse(snapshot);
-    return Object.fromEntries(subAdmins.map(person => [person.id, Object.fromEntries([...operationalPermissions, ...publicPermissions].map(([key]) => [key, saved?.[person.id]?.[key] === true]))]));
-  } catch { return {}; }
+    const saved = JSON.parse(snapshot) || {};
+    return Object.fromEntries(
+      subAdmins.map(person => {
+        const userSaved = saved?.[person.id];
+        const hasSavedConfig = userSaved && typeof userSaved === "object" && Object.keys(userSaved).length > 0;
+        return [
+          person.id,
+          Object.fromEntries(
+            [...operationalPermissions, ...publicPermissions].map(([key]) => [
+              key,
+              hasSavedConfig ? userSaved[key] === true : true
+            ])
+          )
+        ];
+      })
+    );
+  } catch {
+    return Object.fromEntries(
+      subAdmins.map(person => [
+        person.id,
+        Object.fromEntries([...operationalPermissions, ...publicPermissions].map(([key]) => [key, true]))
+      ])
+    );
+  }
 }
 
 export function changeAdminPermission(id, key, enabled) {

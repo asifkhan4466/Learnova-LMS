@@ -2,7 +2,7 @@ import useSubAdminTheme, { themeColors } from "../utils/useSubAdminTheme";
 import { useState } from "react";
 import PublicIcon from "../components/PublicIcon";
 import useProfile from "../utils/useProfile";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, Navigate } from "react-router-dom";
 import "./SubAdminLayout.css";
 import "../components/SubAdminPage.css";
 
@@ -42,7 +42,12 @@ function SubAdminLayout() {
   const location = useLocation();
 
   const isActive = (path) => {
-    return location.pathname === path ? "active" : "";
+    const current = location.pathname.replace(/\/+$/, "");
+    const target = path.replace(/\/+$/, "");
+    if (target === "/subadmin/dashboard") {
+      return current === "/subadmin" || current === "/subadmin/dashboard" ? "active" : "";
+    }
+    return current === target || current.startsWith(`${target}/`) ? "active" : "";
   };
 
   return (
@@ -91,13 +96,28 @@ function SubAdminLayout() {
         </header>
 
         <main className="subadmin-main">
-          {(location.pathname.replace(/\/+$/, "") === "/subadmin" || canAccessSubAdminRoute(location.pathname, permissions)) ? <Outlet /> : (
-            <section role="status">
-              <h1>Access unavailable</h1>
-              <p>Your Admin has not enabled access to this module.</p>
-              <Link to="/subadmin/dashboard">Back to Dashboard</Link>
-            </section>
-          )}
+          {(() => {
+            const page = location.pathname.replace(/\/+$/, "").split("/")[2] || "";
+            const isKnown = [
+              "", "dashboard", "students", "teachers", "courses", "categories",
+              "batches", "enrollments", "payments", "live-classes", "content",
+              "assignments", "certificates", "reviews", "notifications", "reports",
+              "public-content", "permissions", "audit-logs", "settings", "profile", "logout"
+            ].includes(page);
+            if (!isKnown) {
+              return <Navigate to="/subadmin/dashboard" replace />;
+            }
+            if (page === "" || canAccessSubAdminRoute(location.pathname, permissions)) {
+              return <Outlet />;
+            }
+            return (
+              <section role="status">
+                <h1>Access unavailable</h1>
+                <p>Your Admin has not enabled access to this module.</p>
+                <Link to="/subadmin/dashboard">Back to Dashboard</Link>
+              </section>
+            );
+          })()}
         </main>
         <footer className="sa-footer"><span>&copy; 2026 Learnova. All rights reserved.</span><nav aria-label="Footer"><span>Privacy</span><span>Terms</span><Link to="/contact">Help</Link></nav></footer>
 

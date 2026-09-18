@@ -4,5 +4,5 @@ import useCourses from "./useCourses";
 
 export default function useBatches() {
   useCourses(); // Recheck course assignments when the shared catalog changes.
-  return useSyncExternalStore(subscribeBatches, getBatchState);
+  return useSyncExternalStore(subscribeBatches, getBatchState, getBatchState);
 }
