@@ -82,7 +82,7 @@ function LiveClasses() {
       {!classes.length && <p>No live classes are available for your approved active batch.</p>}
       <section className="student-batch-history"><h2>My Batches</h2>{assigned.map(enrollment => {
         const batch = state.batches.find(item => item.id === enrollment.batchId);
-        return <p key={enrollment.id}>{enrollment.course} | {batch?.name || "Awaiting assignment"} | {batch?.status || "Pending"}{!enrollment.approved || enrollment.status === "Pending" ? " | Awaiting enrollment approval" : batch?.status === "Upcoming" ? " | Waiting for Admin activation" : ""}</p>;
+        return <p key={enrollment.id}>{enrollment.course} | {batch?.name || "Awaiting assignment"} | {batch?.status || "Pending"}{!enrollment.approved || enrollment.status === "Pending" ? " | Awaiting enrollment approval" : batch?.status === "Upcoming" ? " | Waiting for Super Admin activation" : ""}</p>;
       })}<h2>Recordings, Notes & Materials</h2>{materials.map(item => <details key={item.id}><summary>{item.title} | {item.batch}</summary><p>{item.course} | {item.type} | {item.status}</p><p>{item.lecture || item.module} {item.date} {item.duration}</p><p>Saved learning record. Media files are not included in this frontend demo.</p></details>)}{!materials.length && <p>No published materials for your assigned batches.</p>}</section>
       <div className="live-class-note">
         <strong>Note:</strong>

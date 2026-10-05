@@ -1,13 +1,11 @@
+﻿import { payments } from "../../data/operations";
+import useBatches from "../../utils/useBatches";
+import SuperAdminRecords from "../../components/SuperAdminRecords";
+import AdminSummary, { AdminHeading } from "../../components/AdminSummary";
 import "./AuditLogs.css";
-import PublicIcon from "../../components/PublicIcon";
-import AdminRecords from "../../components/AdminRecords";
-import { payments, classes } from "../../data/operations";
-
-const columns = [["user", "User"], ["role", "Role"], ["action", "Action"], ["module", "Module"], ["date", "Date / Time"]];
-const rows = [
-  ...payments.map(payment => ({ id: payment.transactionId, user: payment.student, role: "Student", action: `Submitted payment ${payment.transactionId}`, module: "Payments", date: `${payment.date} · Time not recorded` })),
-  ...classes.map((lesson, index) => ({ id: `class-${index}`, user: lesson.teacher, role: "Teacher", action: `Assigned to ${lesson.title}`, module: "Live Classes", date: `${lesson.date} ${lesson.time} (scheduled)` })),
-];
-export default function AuditLogs() {
-  return <section className="admin-audit-design"><header className="aal-banner"><div><h1>Audit Logs</h1><p>Review recorded platform activity across payments and live classes.</p></div><PublicIcon name="clock"/></header><div className="aal-stats">{[["Activity Records",rows.length,"book"],["Payment Records",payments.length,"briefcase"],["Class Assignments",classes.length,"video"]].map(([label,value,icon],index) => <article className={`aal-tone-${index}`} key={label}><span><PublicIcon name={icon}/></span><div><strong>{value}</strong><p>{label}</p></div></article>)}</div><AdminRecords title="Audit Logs" subtitle="Illustrative frontend activity based on demo records; not a live audit trail." rows={rows} columns={columns} /></section>;
+const columns=[["date","Date / Time"],["user","User"],["module","Module"],["action","Action"],["details","Details"],["status","Status"]];
+export default function AuditLogs(){
+ const { classes }=useBatches();
+ const rows=[...payments.map(p=>({id:p.transactionId,date:p.date,user:p.student,module:"Payments",action:"Payment submitted",details:p.transactionId,status:p.status})),...classes.map(c=>({id:c.id,date:`${c.date} ${c.time}`,user:c.teacher,module:"Live Classes",action:"Class scheduled",details:c.title,status:c.status}))];
+ return <section className="sa-page sa-record-page"><SuperAdminRecords paginate filters={[["module","Modules"]]} title="Audit Logs" heading={<AdminHeading title="Audit Logs" subtitle="Review available payment and class activity records." icon="clock"/>} rows={rows} columns={columns}><AdminSummary items={[["Activity Records",rows.length,"clock"],["Users",new Set(rows.map(r=>r.user)).size,"users"],["Class Records",classes.length,"video"],["Payment Records",payments.length,"briefcase"]]}/><p className="sa-muted">Based on existing frontend records. Login, device, and permission-change history is not recorded.</p></SuperAdminRecords></section>;
 }

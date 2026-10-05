@@ -1,18 +1,13 @@
-﻿import "./Permissions.css";
-import { useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
-import { subAdmins, operationalPermissions } from "../../utils/adminPermissions";
-import PublicIcon from "../../components/PublicIcon";
-
-export default function Permissions() {
-  const { permissions, updatePermission, message } = useOutletContext();
-  const [search, setSearch] = useState("");
-  const allowed = subAdmins.reduce((sum, person) => sum + operationalPermissions.filter(([key]) => permissions[person.id]?.[key]).length, 0);
-  const editors = subAdmins.filter(person => permissions[person.id]?.publicWebsite).length;
-  const visible = subAdmins.filter(person => `${person.name} ${person.id}`.toLowerCase().includes(search.trim().toLowerCase()));
-  const stats = [["Sub Admin Accounts", subAdmins.length, "users"], ["Granted Permissions", allowed, "check"], ["Restricted Permissions", subAdmins.length * operationalPermissions.length - allowed, "target"], ["Public Website Editors", editors, "globe"]];
-  return <section className="admin-permission-design"><header className="apr-banner"><div><h1>Permissions</h1><p>Control Sub Admin access to platform modules and public website management.</p></div><blockquote>&ldquo;Great teams build great learning<br/>experiences together.&rdquo;<cite>&mdash; Learnova</cite></blockquote><PublicIcon name="cap"/></header><div className="apr-stats">{stats.map(([label,value,icon],index) => <article className={`apr-tone-${index}`} key={label}><span><PublicIcon name={icon}/></span><div><strong>{value}</strong><p>{label}</p></div></article>)}</div>
-    <section className="apr-panel"><nav className="apr-tabs" aria-label="Permission navigation"><span>Roles &amp; Permissions</span><Link to="/admin/subadmins">Sub Admin Accounts</Link><Link to="/admin/audit-logs">Audit Logs</Link></nav><div className="apr-heading"><div><h2>Roles &amp; Module Permissions</h2><p>Enable or disable module access. Changes save immediately.</p></div><label className="apr-search"><PublicIcon name="search"/><input type="search" aria-label="Search Sub Admin permissions" placeholder="Search accounts..." value={search} onChange={event => setSearch(event.target.value)}/></label></div>{message && <p role="status">{message}</p>}<div className="apr-table" tabIndex="0" aria-label="Module permissions"><table><thead><tr><th>Role / User</th>{operationalPermissions.map(([key,label]) => <th key={key}>{label}</th>)}</tr></thead><tbody><tr><td><div className="apr-person"><span>A</span><div><strong>Admin</strong><small>Full system authority</small></div></div></td>{operationalPermissions.map(([key,label]) => <td key={key}><input className="apr-switch" type="checkbox" role="switch" checked disabled aria-label={`Admin: ${label} always allowed`}/></td>)}</tr>{visible.map(person => <tr key={person.id}><td><div className="apr-person"><span>SA</span><div><strong>{person.name}</strong><small>{person.id}</small></div></div></td>{operationalPermissions.map(([key,label]) => <td key={key}><input className="apr-switch" type="checkbox" role="switch" aria-label={`${person.name}: ${label}`} checked={permissions[person.id]?.[key] === true} onChange={event => updatePermission(person.id, key, event.target.checked)}/></td>)}</tr>)}</tbody></table></div></section>
-    <section className="apr-public"><PublicIcon name="globe"/><div><h2>Allow Sub Admin to Edit Public Website</h2><p>Grant access to selected public website sections using the existing permission controls.</p></div><span>{editors} enabled</span><Link to="/admin/public-content">Manage Website Permissions <PublicIcon name="arrow"/></Link></section><section className="apr-panel apr-guidelines"><h2>Permission Guidelines</h2><ul><li>Admin always has full access and does not require assigned permissions.</li><li>Sub Admin accounts can access only the modules granted by Admin.</li><li>Revoking public website access also clears its detailed content permissions.</li><li>Sub Admin accounts cannot grant themselves permissions.</li></ul></section>
-  </section>;
+import PublicSectionsEditor from "../../components/PublicSectionsEditor";
+import { loginRoles } from "../auth/loginRoles";
+import AdminSummary, { AdminHeading } from "../../components/AdminSummary";
+import AdminPermissionList from "../../components/AdminPermissionList";
+import { operationalPermissions, currentSubAdminId, hasPermission } from "../../utils/adminPermissions";
+import usePermissions from "../../utils/usePermissions";
+import "./Permissions.css";
+export default function Permissions(){
+ const permissions=usePermissions(),allowed=operationalPermissions.filter(([key])=>hasPermission("subadmin",currentSubAdminId,key,permissions)).length;
+ return <section className="sa-page"><AdminHeading title="Permissions" subtitle="View your assigned module access and account authority." icon="target"/><AdminSummary items={[["Total Roles",loginRoles.length,"users"],["Allowed Modules",allowed,"check"],["Restricted Modules",operationalPermissions.length-allowed,"close"],["Available Modules",operationalPermissions.length,"book"]]}/>
+ <section className="sa-panel"><h2>Role &amp; Access</h2><div className="sa-table-wrap"><table><thead><tr><th>Role</th><th>Description</th><th>Permission Authority</th><th>Status</th></tr></thead><tbody>{loginRoles.map(role=><tr key={role.id}><td><strong>{role.name}</strong></td><td>{role.id === "admin" ? "Full platform access." : role.id === "subadmin" ? "Limited access to assigned modules." : role.id === "teacher" ? "Own courses, students, and classes." : "Enrolled courses and learning materials."}</td><td>{role.id === "admin" ? "Highest authority" : "Controlled by Super Admin"}</td><td><span className="sa-status" data-status="Active">Available</span></td></tr>)}</tbody></table></div></section>
+ <section className="sa-panel sa-permissions-overview"><h2>Module Permissions Overview</h2><p>Your Super Admin assigns or revokes access. These permissions are read-only.</p><AdminPermissionList/></section><PublicSectionsEditor/></section>;
 }

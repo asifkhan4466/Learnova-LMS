@@ -1,10 +1,10 @@
 import StudentPayments from "./pages/student/Payments";
-import SubAdminCategories from "./pages/subadmin/Categories";
-import SubAdminReviews from "./pages/subadmin/Reviews";
-import SubAdminPermissions from "./pages/subadmin/Permissions";
-import SubAdminAuditLogs from "./pages/subadmin/AuditLogs";
-import SubAdminSettings from "./pages/subadmin/Settings";
-import SubAdminLogout from "./pages/subadmin/Logout";
+import AdminCategories from "./pages/admin/Categories";
+import AdminReviews from "./pages/admin/Reviews";
+import AdminPermissions from "./pages/admin/Permissions";
+import AdminAuditLogs from "./pages/admin/AuditLogs";
+import AdminSettings from "./pages/admin/Settings";
+import AdminLogout from "./pages/admin/Logout";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
@@ -52,85 +52,84 @@ import TeacherNotifications from "./pages/teacher/Notifications";
 import TeacherSettings from "./pages/teacher/Settings";
 import TeacherLogout from "./pages/teacher/Logout";
 
-import SubAdminLayout from "./layouts/SubAdminLayout";
-import SubAdminDashboard from "./pages/subadmin/Dashboard";
-import SubAdminStudents from "./pages/subadmin/Students";
-import SubAdminTeachers from "./pages/subadmin/Teachers";
-import SubAdminCourses from "./pages/subadmin/Courses";
-import SubAdminBatches from "./pages/subadmin/Batches";
-import SubAdminEnrollments from "./pages/subadmin/Enrollments";
-import SubAdminPayments from "./pages/subadmin/Payments";
-import SubAdminLiveClasses from "./pages/subadmin/LiveClasses";
-import SubAdminContent from "./pages/subadmin/LecturesContent";
-import SubAdminAssignments from "./pages/subadmin/Assignments";
-import SubAdminCertificates from "./pages/subadmin/Certificates";
-import SubAdminReports from "./pages/subadmin/Reports";
-import SubAdminNotifications from "./pages/subadmin/Notifications";
-import SubAdminProfile from "./pages/subadmin/Profile";
-import SubAdminPublicContent from "./pages/subadmin/PublicContent";
-import MonitorLiveRoom from "./pages/monitoring/LiveRoom";
-
-import "./App.css";
 import AdminLayout from "./layouts/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
-import AdminPublicContent from "./pages/admin/PublicContent";
-import AdminSubAdminPermissions from "./pages/admin/SubAdminPermissions";
-
-import AdminHomepage from "./pages/admin/Homepage";
 import AdminStudents from "./pages/admin/Students";
 import AdminTeachers from "./pages/admin/Teachers";
-import AdminSubAdmins from "./pages/admin/SubAdmins";
 import AdminCourses from "./pages/admin/Courses";
-import AdminCategories from "./pages/admin/Categories";
 import AdminBatches from "./pages/admin/Batches";
 import AdminEnrollments from "./pages/admin/Enrollments";
 import AdminPayments from "./pages/admin/Payments";
 import AdminLiveClasses from "./pages/admin/LiveClasses";
-import AdminLecturesContent from "./pages/admin/LecturesContent";
+import AdminContent from "./pages/admin/LecturesContent";
 import AdminAssignments from "./pages/admin/Assignments";
 import AdminCertificates from "./pages/admin/Certificates";
-import AdminReviews from "./pages/admin/Reviews";
-import AdminNotifications from "./pages/admin/Notifications";
 import AdminReports from "./pages/admin/Reports";
-import AdminPermissions from "./pages/admin/Permissions";
-import AdminAuditLogs from "./pages/admin/AuditLogs";
-import AdminSettings from "./pages/admin/Settings";
+import AdminNotifications from "./pages/admin/Notifications";
 import AdminProfile from "./pages/admin/Profile";
+import AdminPublicContent from "./pages/admin/PublicContent";
+import MonitorLiveRoom from "./pages/monitoring/LiveRoom";
+
+import "./App.css";
+import SuperAdminLayout from "./layouts/SuperAdminLayout";
+import SuperAdminDashboard from "./pages/superadmin/Dashboard";
+import SuperAdminPublicContent from "./pages/superadmin/PublicContent";
+import SuperAdminSubAdminPermissions from "./pages/superadmin/AdminPermissions";
+
+import SuperAdminHomepage from "./pages/superadmin/Homepage";
+import SuperAdminStudents from "./pages/superadmin/Students";
+import SuperAdminTeachers from "./pages/superadmin/Teachers";
+import SuperAdminSubAdmins from "./pages/superadmin/Admins";
+import SuperAdminCourses from "./pages/superadmin/Courses";
+import SuperAdminCategories from "./pages/superadmin/Categories";
+import SuperAdminBatches from "./pages/superadmin/Batches";
+import SuperAdminEnrollments from "./pages/superadmin/Enrollments";
+import SuperAdminPayments from "./pages/superadmin/Payments";
+import SuperAdminLiveClasses from "./pages/superadmin/LiveClasses";
+import SuperAdminLecturesContent from "./pages/superadmin/LecturesContent";
+import SuperAdminAssignments from "./pages/superadmin/Assignments";
+import SuperAdminCertificates from "./pages/superadmin/Certificates";
+import SuperAdminReviews from "./pages/superadmin/Reviews";
+import SuperAdminNotifications from "./pages/superadmin/Notifications";
+import SuperAdminReports from "./pages/superadmin/Reports";
+import SuperAdminPermissions from "./pages/superadmin/Permissions";
+import SuperAdminAuditLogs from "./pages/superadmin/AuditLogs";
+import SuperAdminSettings from "./pages/superadmin/Settings";
+import SuperAdminProfile from "./pages/superadmin/Profile";
 
 function App() {
   return (
     <BrowserRouter>
 
       <Routes>
-        <Route path="/admin" element={<AdminLayout />}>
+        <Route path="/superadmin" element={<SuperAdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="dashboard" element={<AdminDashboard />} />
-          <Route path="homepage" element={<AdminHomepage />} />
-          <Route path="students" element={<AdminStudents />} />
-          <Route path="teachers" element={<AdminTeachers />} />
-          <Route path="subadmins" element={<AdminSubAdmins />} />
-          <Route path="courses" element={<AdminCourses />} />
-          <Route path="categories" element={<AdminCategories />} />
-          <Route path="batches" element={<AdminBatches />} />
-          <Route path="enrollments" element={<AdminEnrollments />} />
-          <Route path="payments" element={<AdminPayments />} />
-          <Route path="live-classes" element={<AdminLiveClasses />} />
-          <Route path="live-classes/:id" element={<MonitorLiveRoom role="Admin" />} />
-          <Route path="live-classes/:classId" element={<MonitorLiveRoom role="Admin" />} />
-          <Route path="content" element={<AdminLecturesContent />} />
-          <Route path="assignments" element={<AdminAssignments />} />
-          <Route path="certificates" element={<AdminCertificates />} />
-          <Route path="reviews" element={<AdminReviews />} />
-          <Route path="notifications" element={<AdminNotifications />} />
-          <Route path="reports" element={<AdminReports />} />
-          <Route path="permissions" element={<AdminPermissions />} />
-          <Route path="audit-logs" element={<AdminAuditLogs />} />
-          <Route path="settings" element={<AdminSettings />} />
-          <Route path="profile" element={<AdminProfile />} />
+          <Route path="dashboard" element={<SuperAdminDashboard />} />
+          <Route path="homepage" element={<SuperAdminHomepage />} />
+          <Route path="students" element={<SuperAdminStudents />} />
+          <Route path="teachers" element={<SuperAdminTeachers />} />
+          <Route path="subadmins" element={<SuperAdminSubAdmins />} />
+          <Route path="courses" element={<SuperAdminCourses />} />
+          <Route path="categories" element={<SuperAdminCategories />} />
+          <Route path="batches" element={<SuperAdminBatches />} />
+          <Route path="enrollments" element={<SuperAdminEnrollments />} />
+          <Route path="payments" element={<SuperAdminPayments />} />
+          <Route path="live-classes" element={<SuperAdminLiveClasses />} />
+          <Route path="live-classes/:id" element={<MonitorLiveRoom role="Super Admin" />} />
+          <Route path="content" element={<SuperAdminLecturesContent />} />
+          <Route path="assignments" element={<SuperAdminAssignments />} />
+          <Route path="certificates" element={<SuperAdminCertificates />} />
+          <Route path="reviews" element={<SuperAdminReviews />} />
+          <Route path="notifications" element={<SuperAdminNotifications />} />
+          <Route path="reports" element={<SuperAdminReports />} />
+          <Route path="permissions" element={<SuperAdminPermissions />} />
+          <Route path="audit-logs" element={<SuperAdminAuditLogs />} />
+          <Route path="settings" element={<SuperAdminSettings />} />
+          <Route path="profile" element={<SuperAdminProfile />} />
 
-          <Route path="public-content" element={<AdminPublicContent />} />
-          <Route path="subadmin-permissions" element={<AdminSubAdminPermissions />} />
-          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="public-content" element={<SuperAdminPublicContent />} />
+          <Route path="subadmin-permissions" element={<SuperAdminSubAdminPermissions />} />
+          <Route path="*" element={<Navigate to="/superadmin/dashboard" replace />} />
         </Route>
 
         {/* Public Pages */}
@@ -158,7 +157,7 @@ function App() {
         />
 
         {loginRoles.map(role => (
-          <Route key={role.id} path={`/login/${role.id}`} element={<><Navbar /><Login key={role.id} role={role} /><Footer /></>} />
+          <Route key={role.id} path={`/login/${role.path || role.id}`} element={<><Navbar /><Login key={role.id} role={role} /><Footer /></>} />
         ))}
 
         <Route
@@ -349,69 +348,68 @@ function App() {
           />
         </Route>
 
-        {/* Sub Admin Panel */}
-        <Route path="/subadmin" element={<SubAdminLayout />}>
-          <Route path="categories" element={<SubAdminCategories />} />
-          <Route path="reviews" element={<SubAdminReviews />} />
-          <Route path="permissions" element={<SubAdminPermissions />} />
-          <Route path="audit-logs" element={<SubAdminAuditLogs />} />
-          <Route path="settings" element={<SubAdminSettings />} />
-          <Route path="logout" element={<SubAdminLogout />} />
+        {/* Admin Panel */}
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route path="categories" element={<AdminCategories />} />
+          <Route path="reviews" element={<AdminReviews />} />
+          <Route path="permissions" element={<AdminPermissions />} />
+          <Route path="audit-logs" element={<AdminAuditLogs />} />
+          <Route path="settings" element={<AdminSettings />} />
+          <Route path="logout" element={<AdminLogout />} />
           <Route index element={<Navigate to="dashboard" replace />} />
-          <Route path="notifications" element={<SubAdminNotifications />} />
-          <Route path="profile" element={<SubAdminProfile />} />
-          <Route path="certificates" element={<SubAdminCertificates subadminView />} />
+          <Route path="notifications" element={<AdminNotifications />} />
+          <Route path="profile" element={<AdminProfile />} />
+          <Route path="certificates" element={<AdminCertificates subadminView />} />
           <Route
             path="dashboard"
-            element={<SubAdminDashboard />}
+            element={<AdminDashboard />}
           />
           <Route
             path="students"
-            element={<SubAdminStudents />}
+            element={<AdminStudents />}
           />
           <Route
             path="teachers"
-            element={<SubAdminTeachers />}
+            element={<AdminTeachers />}
           />
           <Route
             path="courses"
-            element={<SubAdminCourses />}
+            element={<AdminCourses />}
           />
           <Route
             path="batches"
-            element={<SubAdminBatches />}
+            element={<AdminBatches />}
           />
           <Route
             path="enrollments"
-            element={<SubAdminEnrollments />}
+            element={<AdminEnrollments />}
           />
           <Route 
             path="payments"
-            element={<SubAdminPayments />}
+            element={<AdminPayments />}
           />
           <Route
             path="live-classes"
-            element={<SubAdminLiveClasses />}
+            element={<AdminLiveClasses />}
           />
-          <Route path="live-classes/:id" element={<MonitorLiveRoom role="Sub Admin" />} />
-          <Route path="live-classes/:classId" element={<MonitorLiveRoom role="Sub Admin" />} />
+          <Route path="live-classes/:id" element={<MonitorLiveRoom role="Admin" />} />
           <Route
             path="content"
-            element={<SubAdminContent />}
+            element={<AdminContent />}
           />
           <Route
             path="assignments"
-            element={<SubAdminAssignments />}
+            element={<AdminAssignments />}
           />
           <Route
             path="reports"
-            element={<SubAdminReports />}
+            element={<AdminReports />}
           />
           <Route
             path="public-content"
-            element={<SubAdminPublicContent />}
+            element={<AdminPublicContent />}
           />
-          <Route path="*" element={<Navigate to="/subadmin/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Route>
 
         {/* Catch-all fallback for unknown public routes */}

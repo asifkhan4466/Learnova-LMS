@@ -5,7 +5,7 @@ import { classStatus } from "../../utils/batchStorage";
 import useLiveWebRTC from "../../utils/useLiveWebRTC";
 import "../teacher/LiveRoom.css";
 
-export default function LiveRoom({ role = "Admin" }) {
+export default function LiveRoom({ role = "Super Admin" }) {
   const { id, classId } = useParams();
   const targetId = classId || id;
   const navigate = useNavigate();

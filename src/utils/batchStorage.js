@@ -27,7 +27,7 @@ function initialState() {
       ...batch, id: slug(`${batch.course}-${batch.name}`), courseId: courseId(batch.course),
       teacherId: teachers.find(teacher => teacher.name === batch.teacher)?.id,
       status: normalizedStatus,
-      approvedBy: normalizedStatus === "Active" ? "Admin" : null,
+      approvedBy: normalizedStatus === "Active" ? "Super Admin" : null,
     };
   });
   const associate = item => {
@@ -208,16 +208,16 @@ export function subscribeBatches(listener) {
 }
 
 export function activateBatch(id, role) {
-  if (role !== "admin") throw new Error("Only Admin can activate a batch.");
+  if (role !== "admin") throw new Error("Only Super Admin can activate a batch.");
   const state = getBatchState();
   const selected = state.batches.find(batch => batch.id === id);
   if (selected?.status !== "Upcoming") throw new Error("Choose an upcoming batch.");
-  const next = state.batches.map(batch => batch.id === id ? { ...batch, status: "Active", approvedBy: "Admin" } : batch.courseId === selected.courseId && batch.status === "Active" ? { ...batch, status: "Completed" } : batch);
+  const next = state.batches.map(batch => batch.id === id ? { ...batch, status: "Active", approvedBy: "Super Admin" } : batch.courseId === selected.courseId && batch.status === "Active" ? { ...batch, status: "Completed" } : batch);
   save({ ...state, batches: next, classes: state.classes.map(item => item.status === "Live" && next.some(batch => batch.id === item.batchId && batch.status === "Completed") ? { ...item, status: "Completed" } : item) });
 }
 
 export function assignBatch(enrollmentId, batchId, approved, role) {
-  if (role !== "admin") throw new Error("Only Admin can approve batch assignments.");
+  if (role !== "admin") throw new Error("Only Super Admin can approve batch assignments.");
   const state = getBatchState();
   const enrollment = state.enrollments.find(item => item.id === enrollmentId);
   const batch = state.batches.find(item => item.id === batchId);
@@ -716,13 +716,50 @@ export function createManagedBatch(form, role) {
  const state=getBatchState(), course=getCourses().find(c=>String(c.id)===String(form.courseId)), teacher=getTeachers().find(t=>t.id===form.teacherId && t.status==="Active");
  if(!course || !teacher || !form.name?.trim()) throw new Error("Enter a batch name and select a course and active instructor.");
  if(state.batches.some(b=>b.courseId===course.id && b.name.toLowerCase()===form.name.trim().toLowerCase())) throw new Error("Batch name already exists for this course.");
- const batch={id:crypto.randomUUID(),name:form.name.trim(),courseId:course.id,course:course.title,teacherId:teacher.id,teacher:teacher.name,status:"Upcoming",students:0,startDate:form.startDate || "",endDate:form.endDate || ""};
+ validateBatchDatesAndMode(form);
+ const batch={id:crypto.randomUUID(),name:form.name.trim(),courseId:course.id,course:course.title,teacherId:teacher.id,teacher:teacher.name,status:"Upcoming",students:0,startDate:form.startDate || "",endDate:form.endDate || "",mode:form.mode || "Online"};
  save({...state,batches:[...state.batches,batch]});
+ return batch;
+}
+
+function validateBatchDatesAndMode(form) {
+ if (form.mode && !["Online", "Live Class", "In Person", "Hybrid"].includes(form.mode)) throw new Error("Choose a valid batch mode.");
+ for (const key of ["startDate", "endDate"]) {
+  if (form[key] && (!/^\d{4}-\d{2}-\d{2}$/.test(form[key]) || !Number.isFinite(Date.parse(form[key])) || new Date(form[key]).toISOString().slice(0,10) !== form[key])) throw new Error("Enter valid batch dates.");
+ }
+ if (form.startDate && form.endDate && form.endDate < form.startDate) throw new Error("End date must be on or after the start date.");
+}
+
+export function updateManagedBatch(id, form, role) {
+ if (!hasPermission(role,currentSubAdminId,"batches")) throw new Error("Batch management is not allowed.");
+ const state=getBatchState(), existing=state.batches.find(batch=>batch.id===id);
+ if (!existing) throw new Error("This batch no longer exists.");
+ const course=getCourses().find(item=>String(item.id)===String(form.courseId));
+ const teacher=getTeachers().find(item=>item.id===form.teacherId);
+ if (!course || !teacher || (teacher.status!=="Active" && teacher.id!==existing.teacherId) || !form.name?.trim()) throw new Error("Enter a batch name and select a course and active instructor.");
+ validateBatchDatesAndMode(form);
+ if(state.batches.some(batch=>batch.id!==id && batch.courseId===course.id && batch.name.toLowerCase()===form.name.trim().toLowerCase())) throw new Error("Batch name already exists for this course.");
+ if(state.classes.some(item=>item.batchId===id && item.status==="Live")) throw new Error("End the live class before editing this batch.");
+ const linked=Object.values(state).some(value=>Array.isArray(value)&&value.some(item=>item?.batchId===id));
+ if(linked && (course.id!==existing.courseId || teacher.id!==existing.teacherId)) throw new Error("This batch has linked records. Keep its course and instructor to preserve enrollment and class history.");
+ const updated={...existing,name:form.name.trim(),courseId:course.id,course:course.title,teacherId:teacher.id,teacher:teacher.name,startDate:form.startDate||"",endDate:form.endDate||"",mode:form.mode||existing.mode||"Online"};
+ const next=Object.fromEntries(Object.entries(state).map(([key,value])=>[key,Array.isArray(value)?value.map(item=>item?.batchId===id?{...item,...("batch" in item?{batch:updated.name}:{}),...("batchName" in item?{batchName:updated.name}:{})}:item):value]));
+ save({...next,batches:state.batches.map(batch=>batch.id===id?updated:batch)});
+ return updated;
+}
+
+export function deleteManagedBatch(id, role) {
+ if (!hasPermission(role,currentSubAdminId,"batches")) throw new Error("Batch management is not allowed.");
+ const state=getBatchState();
+ const batch=state.batches.find(item=>item.id===id);
+ if(!batch) throw new Error("This batch no longer exists.");
+ if(batch.students>0 || Object.values(state).some(value=>Array.isArray(value)&&value.some(item=>item?.batchId===id))) throw new Error("This batch has students or linked records and cannot be deleted. Its enrollment and class history must be preserved.");
+ save({...state,batches:state.batches.filter(item=>item.id!==id)});
 }
 export function placeApprovedEnrollment(id,batchId,role) {
  if(!hasPermission(role,currentSubAdminId,"enrollments")) throw new Error("Enrollment management is not allowed.");
  const state=getBatchState(), enrollment=state.enrollments.find(e=>e.id===id), batch=state.batches.find(b=>b.id===batchId);
  if(!enrollment?.approved || !batch || batch.status==="Completed" || batch.courseId!==enrollment.courseId) throw new Error("Select an upcoming or active batch for this approved course.");
- if(enrollment.batchId && enrollment.batchId!==batchId) throw new Error("Use Admin enrollment reassignment to preserve the existing batch history.");
+ if(enrollment.batchId && enrollment.batchId!==batchId) throw new Error("Use Super Admin enrollment reassignment to preserve the existing batch history.");
  save({...state,enrollments:state.enrollments.map(e=>e.id===id ? {...e,batchId:batch.id,batch:batch.name,teacherId:batch.teacherId}:e)});
 }

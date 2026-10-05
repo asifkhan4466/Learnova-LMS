@@ -1,8 +1,22 @@
+import { useState } from "react";
+import { loginSubAdmin } from "../../utils/adminPermissions";
 import "./Login.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Login({ role }) {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
+  const [busy, setBusy] = useState(false);
+  async function submit(event) {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    setBusy(true); setError("");
+    try {
+      if (role.id === "subadmin") await loginSubAdmin(data.get("identifier"), data.get("password"));
+      navigate(role.id === "student" && new URLSearchParams(search).get("course") ? `/student/payments?course=${encodeURIComponent(new URLSearchParams(search).get("course"))}` : `/${role.path || role.id}/dashboard`, { replace: true });
+    } catch (error) { setError(error.message); }
+    finally { setBusy(false); }
+  }
   const { search, state } = useLocation();
   const backParams = new URLSearchParams(search);
   if (["admin", "subadmin"].includes(role.id)) backParams.set("group", "admin");
@@ -22,14 +36,14 @@ function Login({ role }) {
           </p>
         </div>
 
-        <form className="login-form" onSubmit={event => { event.preventDefault(); navigate(role.id === "student" && new URLSearchParams(search).get("course") ? `/student/payments?course=${encodeURIComponent(new URLSearchParams(search).get("course"))}` : `/${role.id}/dashboard`, { replace: true }); }}>
+        <form className="login-form" onSubmit={submit}>
 
           <div className="form-group">
             <label htmlFor="login-identifier">Email or User ID</label>
 
             <input
               type="text"
-              id="login-identifier"
+              id="login-identifier" name="identifier" required={role.id === "subadmin"}
               autoComplete="username"
               placeholder="Enter your email or user ID"
             />
@@ -40,7 +54,7 @@ function Login({ role }) {
 
             <input
               type="password"
-              id="login-password"
+              id="login-password" name="password" required={role.id === "subadmin"}
               autoComplete="current-password"
               placeholder="Enter your password"
             />
@@ -57,8 +71,9 @@ function Login({ role }) {
             </Link>
           </div>
 
-          <button type="submit" className="login-submit">
-            Login
+          {error && <p role="alert">{error}</p>}
+          <button type="submit" className="login-submit" disabled={busy}>
+            {busy ? "Logging in..." : "Login"}
           </button>
 
         </form>

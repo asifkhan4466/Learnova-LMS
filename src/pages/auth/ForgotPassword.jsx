@@ -46,7 +46,7 @@ function ForgotPassword() {
           {message && <p role="status">{message}</p>}
 
         <div className="back-login">
-          <Link to={`${role ? `/login/${role.id}` : "/login"}${returnSearch}`} state={state}>
+          <Link to={`${role ? `/login/${role.path || role.id}` : "/login"}${returnSearch}`} state={state}>
             ← Back to Login
           </Link>
         </div>

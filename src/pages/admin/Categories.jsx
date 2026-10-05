@@ -1,28 +1,22 @@
-import useCategories from "../../utils/useCategories";
-import "./Categories.css";
+import useCategories, { addCategory, removeCategory } from "../../utils/useCategories";
 import { useRef, useState } from "react";
-import PublicIcon from "../../components/PublicIcon";
 import useCourses from "../../utils/useCourses";
-
-export default function Categories() {
-  const courses = useCourses();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [sort, setSort] = useState("name");
-  const [selected, setSelected] = useState(null);
-  const dialog = useRef(null);
-  const rows = useCategories().map(name => {
-    const categoryCourses = courses.filter(course => course.category === name);
-    const published = categoryCourses.filter(course => course.status === "Published").length;
-    return { name, count: categoryCourses.length, published, status: published ? "Published" : "Not public" };
-  });
-  const visible = rows.filter(row => row.name.toLowerCase().includes(search.trim().toLowerCase()) && (!status || row.status === status)).sort((a,b) => sort === "count" ? b.count - a.count : a.name.localeCompare(b.name));
-  const stats = [["Total Categories", rows.length, "database"], ["Public Categories", rows.filter(row => row.published).length, "book"], ["Published Courses", courses.filter(course => course.status === "Published").length, "globe"], ["Courses Mapped", courses.length, "cap"]];
-  return <section className="admin-categories">
-    <header className="ac-banner"><div><h1>Categories</h1><p>Organize course categories and discovery across your platform.</p></div><blockquote>&ldquo;A well-organized learning platform<br/>opens doors to endless possibilities.&rdquo;<cite>&mdash; Learnova</cite></blockquote><PublicIcon name="cap"/></header>
-    <div className="ac-stats">{stats.map(([label,value,icon],index) => <article className={`ac-tone-${index}`} key={label}><span className="ac-icon"><PublicIcon name={icon}/></span><div><strong>{value}</strong><span>{label}</span><small>Shared course catalog</small></div></article>)}</div>
-    <div className="ac-tools"><label className="ac-search"><PublicIcon name="search"/><input aria-label="Search categories" type="search" placeholder="Search categories, e.g. Development..." value={search} onChange={event => setSearch(event.target.value)}/></label><select aria-label="Filter category status" value={status} onChange={event => setStatus(event.target.value)}><option value="">All Statuses</option><option>Published</option><option>Not public</option></select><button onClick={() => { setSearch(""); setStatus(""); setSort("name"); }}>Reset Filters</button></div>
-    <section className="ac-panel"><header><h2>All Categories ({rows.length})</h2><select aria-label="Sort categories" value={sort} onChange={event => setSort(event.target.value)}><option value="name">Sort by: Name</option><option value="count">Sort by: Most Courses</option></select></header><div className="ac-table" tabIndex="0" aria-label="Category records"><table><thead><tr><th>Category</th><th>Courses</th><th>Published Courses</th><th>Visibility</th><th>Status</th><th>Actions</th></tr></thead><tbody>{visible.map((row,index) => <tr key={row.name}><td><div className={`ac-category ac-tone-${index % 4}`}><span className="ac-icon"><PublicIcon name="book"/></span><div><strong>{row.name}</strong><small>Explore {row.name.toLowerCase()} courses.</small></div></div></td><td><strong>{row.count}</strong><small>courses</small></td><td>{row.published}</td><td><span className="ac-visibility"><PublicIcon name="globe"/>{row.published ? "Public" : "Not public"}</span></td><td><span className={`ac-badge ${row.published ? "" : "ac-muted"}`}>{row.status}</span></td><td><button aria-label={`View ${row.name}`} onClick={() => { setSelected(row.name); dialog.current.showModal(); }}><PublicIcon name="search"/> View</button></td></tr>)}{!visible.length && <tr><td colSpan="6">No matching categories.</td></tr>}</tbody></table></div><footer><span role="status">Showing {visible.length} of {rows.length} categories</span></footer></section>
-    <dialog ref={dialog} aria-labelledby="ac-details"><h2 id="ac-details">{selected}</h2><p>Courses in this category</p><ul>{courses.filter(course => course.category === selected).map(course => <li key={course.id}><strong>{course.title}</strong><small>{course.instructor} &middot; {course.status}</small></li>)}</ul><form method="dialog"><button>Close</button></form></dialog>
-  </section>;
+import PublicIcon from "../../components/PublicIcon";
+import AdminSummary, { AdminHeading } from "../../components/AdminSummary";
+import "./Categories.css";
+export default function Categories(){
+ const courses=useCourses(), dialog=useRef(null), addDialog=useRef(null);
+ const [layout,setLayout]=useState("grid");
+ const [search,setSearch]=useState(""),[status,setStatus]=useState(""),[selected,setSelected]=useState("");
+ const [name,setName]=useState(""),[message,setMessage]=useState("");
+ const categories=useCategories().map(name=>({name,courses:courses.filter(c=>c.category===name)}));
+ const visible=categories.filter(c=>c.name.toLowerCase().includes(search.trim().toLowerCase())&&(!status||(c.courses.some(v=>v.status==="Published")?"Active":"Inactive")===status));
+ return <section className="sa-page sa-categories"><AdminHeading title="Categories" subtitle="Organize and manage course categories." icon="database"><button className="sac-primary" onClick={()=>{setName("");setMessage("");addDialog.current.showModal();}}>+ Add Category</button></AdminHeading>
+ <AdminSummary items={[["Total Categories",categories.length,"database"],["Active Categories",categories.filter(c=>c.courses.some(v=>v.status==="Published")).length,"check"],["Courses Mapped",courses.length,"book"],["Featured Courses",courses.filter(c=>c.featured).length,"star"]]}/>
+ {message&&<p role="status">{message}</p>}
+ <section className="sac-content">
+ <div className="sa-toolbar"><label className="sac-search"><PublicIcon name="search"/><input type="search" placeholder="Search categories..." aria-label="Search categories" value={search} onChange={e=>setSearch(e.target.value)}/></label><select aria-label="Category status" value={status} onChange={e=>setStatus(e.target.value)}><option value="">All Statuses</option><option>Active</option><option>Inactive</option></select><div className="sac-layout" role="group" aria-label="Category display"><button aria-label="Grid view" aria-pressed={layout==="grid"} onClick={()=>setLayout("grid")}><PublicIcon name="database"/></button><button aria-label="List view" aria-pressed={layout==="list"} onClick={()=>setLayout("list")}><PublicIcon name="menu"/></button></div></div>
+ <div className={`sa-category-grid${layout==="list"?" sac-list":""}`}>{visible.map((c,i)=><article className={`sa-panel sa-summary-tone-${i%4}`} key={c.name}><span className="sa-category-icon"><PublicIcon name={c.courses[0]?.visual || "book"}/></span><h2>{c.name}</h2><p>Explore courses and learning materials in {c.name.toLowerCase()}.</p><div className="sa-category-meta"><span>{c.courses.length} Courses</span><span className="sa-status" data-status={c.courses.some(v=>v.status==="Published")?"Active":"Inactive"}>{c.courses.some(v=>v.status==="Published")?"Active":"Inactive"}</span></div><div className="sac-actions"><button onClick={()=>{setSelected(c.name);dialog.current.showModal();}} aria-label={`View ${c.name}`}><PublicIcon name="search"/>View Courses</button><button onClick={()=>{try{if(!window.confirm(`Remove ${c.name}?`))return;removeCategory(c.name);setMessage("Category removed.");}catch(error){setMessage(error.message);}}} aria-label={`Remove ${c.name}`}>Remove</button></div></article>)}</div>{!visible.length&&<p>No matching categories.</p>}
+ <p className="sa-muted">Showing {visible.length} of {categories.length} categories</p></section><dialog ref={addDialog} aria-labelledby="sac-add-title"><h2 id="sac-add-title">Add Category</h2> <form className="sa-toolbar" onSubmit={event=>{event.preventDefault();try{addCategory(name);setName("");addDialog.current.close();setMessage("Category added.");}catch(error){setMessage(error.message);}}}><input required aria-label="New category name" placeholder="New category name" value={name} onChange={event=>setName(event.target.value)}/><button className="sa-primary" type="submit">Add Category</button></form>{message&&<p role="status">{message}</p>}
+<button onClick={()=>addDialog.current.close()}>Cancel</button></dialog><dialog ref={dialog}><h2>{selected}</h2><ul>{courses.filter(c=>c.category===selected).map(c=><li key={c.id}>{c.title} &middot; {c.status}</li>)}</ul><form method="dialog"><button>Close</button></form></dialog></section>;
 }

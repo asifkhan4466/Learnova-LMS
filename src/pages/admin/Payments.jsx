@@ -1,25 +1,46 @@
 import ReceivingAccount from "../../components/ReceivingAccount";
-import "./Payments.css";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import useBatches from "../../utils/useBatches";
 import { paymentRecords, approvePayment, rejectPayment } from "../../utils/batchStorage";
-import PublicIcon from "../../components/PublicIcon";
+import SuperAdminRecords from "../../components/SuperAdminRecords";
+import AdminSummary, { AdminHeading } from "../../components/AdminSummary";
+import "./Payments.css";
 
+const columns = [["student", "Student"], ["studentId", "Student ID"], ["course", "Course"], ["batch", "Batch"], ["method", "Payment Method"], ["senderName", "Sender Name"], ["senderAccount", "Sender Account"], ["receiver", "Receiving Account"], ["transactionId", "Transaction ID"], ["amount", "Amount"], ["date", "Date"], ["status", "Status", row => <span className="sa-status" data-status={row.status}>{row.status}</span>]];
+function receivingDetails(row) {
+  let account = row.receivingAccount;
+  if (typeof account === "string") {
+    try { account = JSON.parse(account); } catch { account = null; }
+  }
+  return {
+    holder: account?.accountHolderName || account?.owner || row.receivingAccountHolderName || "Not provided",
+    provider: account?.providerName || account?.provider || row.receivingAccountProvider || "Not provided",
+    number: account?.accountNumber || account?.number || row.receivingAccountNumber || "Not provided",
+    method: account?.paymentMethod || account?.method || row.paymentMethod || row.method || "Not provided",
+  };
+}
+function detailRenderer(row) {
+  const account = receivingDetails(row);
+  const receipt = row.receipt || row.proof || row.receiptMetadata;
+  return <div className="payment-detail-modal">
+    <div className="payment-detail-status" data-status={row.status}>{row.status || "Pending"}</div>
+    <section><h3>Student Information</h3><div className="payment-detail-grid"><div><span>Student Name</span><strong>{row.studentName || row.student || "Not provided"}</strong></div><div><span>Student ID</span><strong>{row.studentId || "Not provided"}</strong></div></div></section>
+    <section><h3>Course &amp; Enrollment</h3><div className="payment-detail-grid"><div><span>Course</span><strong>{row.courseTitle || row.course || "Not provided"}</strong></div><div><span>Batch</span><strong>{row.batch || "Awaiting assignment"}</strong></div><div><span>Enrollment Status</span><strong>{row.enrollmentStatus || row.status || "Not provided"}</strong></div></div></section>
+    <section><h3>Payment Information</h3><div className="payment-detail-grid"><div><span>Payment Method</span><strong>{row.paymentMethod || row.method || "Not provided"}</strong></div><div><span>Transaction ID</span><strong>{row.transactionId || row.studentTransactionId || "Not provided"}</strong></div><div><span>Amount</span><strong>{row.amount || "Not provided"}</strong></div><div><span>Payment Date</span><strong>{row.paymentDate || row.submittedAt || row.date || "Not provided"}</strong></div><div><span>Status</span><strong>{row.status || "Pending"}</strong></div></div></section>
+    <section className="payment-receiving-card"><h3>Receiving Account</h3><div className="payment-detail-grid"><div><span>Account Holder Name</span><strong>{account.holder}</strong></div><div><span>Bank / Wallet Provider</span><strong>{account.provider}</strong></div><div><span>Account / IBAN / Wallet Number</span><strong>{account.number}</strong></div><div><span>Payment Method</span><strong>{account.method}</strong></div></div></section>
+    <section><h3>Payment Proof</h3>{receipt ? <div className="payment-proof-row"><strong>{receipt.fileName || receipt.name || "Uploaded receipt"}</strong>{(receipt.fileData || receipt.url) && <a href={receipt.fileData || receipt.url} target="_blank" rel="noreferrer">View / Open</a>}</div> : <p className="payment-detail-empty">No receipt uploaded</p>}</section>
+  </div>;
+}
 export default function Payments() {
-  const payments = paymentRecords(useBatches());
-  const [message,setMessage] = useState("");
-  const [tab, setTab] = useState("all");
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState("");
-  const [course, setCourse] = useState("");
-  const [batch, setBatch] = useState("");
-  const [selected, setSelected] = useState(null);
-  const dialog = useRef(null);
-  const visible = payments.filter(row => (tab !== "history" || row.status !== "Pending") && (!status || row.status === status) && (!course || row.course === course) && (!batch || row.batch === batch) && [row.student, row.studentId, row.transactionId].some(value => value.toLowerCase().includes(search.trim().toLowerCase())));
-  const stats = [["Pending Verification", payments.filter(row => row.status === "Pending").length, "clock"], ["Approved Payments", payments.filter(row => row.status === "Approved").length, "check"], ["Rejected Payments", payments.filter(row => row.status === "Rejected").length, "close"], ["Total Amount", "PKR " + payments.reduce((sum,row) => sum + Number(row.amount.replace(/[^0-9.]/g,"")),0).toLocaleString(), "database"]];
-  return <section className="admin-payments"><header className="ap-banner"><div><h1>Payments &amp; Verification</h1><p>Review and verify student payments for course enrollments.</p></div><blockquote>&ldquo;A reliable payment system builds<br/>trust and empowers education for all.&rdquo;<cite>&mdash; Learnova</cite></blockquote><PublicIcon name="briefcase"/><PublicIcon name="check"/></header><div className="ap-stats">{stats.map(([label,value,icon],index) => <article className={`ap-tone-${index}`} key={label}><span className="ap-icon"><PublicIcon name={icon}/></span><div><strong>{value}</strong><p>{label}</p><small>{index === 0 ? "Needs your review" : "Existing payment records"}</small></div></article>)}</div>
-    <ReceivingAccount editable/><section className="ap-panel"><div className="ap-tabs">{[["all","Payment Requests"],["history","Verification History"]].map(([value,label]) => <button key={value} aria-pressed={tab === value} onClick={() => setTab(value)}>{label}</button>)}</div><div className="ap-filters"><select aria-label="Payment status" value={status} onChange={event => setStatus(event.target.value)}><option value="">All Statuses</option>{[...new Set(payments.map(row => row.status))].map(value => <option key={value}>{value}</option>)}</select><select aria-label="Filter course" value={course} onChange={event => setCourse(event.target.value)}><option value="">All Courses</option>{[...new Set(payments.map(row => row.course))].map(value => <option key={value}>{value}</option>)}</select><select aria-label="Filter batch" value={batch} onChange={event => setBatch(event.target.value)}><option value="">All Batches</option>{[...new Set(payments.map(row => row.batch))].map(value => <option key={value}>{value}</option>)}</select><label className="ap-search"><PublicIcon name="search"/><input type="search" aria-label="Search payments" placeholder="Search student name, transaction ID..." value={search} onChange={event => setSearch(event.target.value)}/></label></div>
-    <div className="ap-table" tabIndex="0" aria-label="Payment records"><table><thead><tr>{["#","Student","Course","Batch","Payment Method","Transaction ID","Date","Amount","Status","Action"].map(label => <th key={label}>{label}</th>)}</tr></thead><tbody>{visible.map((row,index) => <tr key={row.transactionId}><td>{index + 1}</td><td><div className="ap-student"><span>{row.student.split(" ").map(part => part[0]).join("")}</span><div><strong>{row.student}</strong><small>{row.studentId}</small></div></div></td><td>{row.course}</td><td>{row.batch}</td><td><span className="ap-method"><PublicIcon name="briefcase"/>{row.method}</span></td><td>{row.transactionId}</td><td>{row.date}</td><td><strong>{row.amount}</strong></td><td><span className={`ap-badge ap-${row.status.toLowerCase()}`}>{row.status}</span></td><td><button className={row.status === "Pending" ? "ap-review" : ""} onClick={() => { setSelected(row); dialog.current.showModal(); }}>{row.status === "Pending" ? "Review" : "View"}</button></td></tr>)}{!visible.length && <tr><td colSpan="10">No matching payments.</td></tr>}</tbody></table></div><footer role="status">Showing {visible.length} of {payments.length} payments</footer></section>
-    <dialog ref={dialog} aria-labelledby="ap-details"><h2 id="ap-details">Payment Details</h2>{selected && <dl>{[["student","Student"],["studentId","Student ID"],["course","Course"],["batch","Batch"],["method","Payment Method"],["senderName","Sender Name"],["senderAccount","Sender Account"],["receiver","Receiving Account"],["transactionId","Transaction ID"],["date","Date"],["amount","Amount"],["status","Status"]].map(([key,label]) => <div key={key}><dt>{label}</dt><dd>{selected[key]}</dd></div>)}</dl>}{selected?.status === "Pending" && <button onClick={() => {try{approvePayment(selected.transactionId,"admin");setSelected({...selected,status:"Approved"});setMessage("Payment approved and course assigned.");}catch(error){setMessage(error.message);}}}>Approve Payment</button>}{selected?.status === "Pending" && <button onClick={()=>{try{rejectPayment(selected.transactionId,"admin");setSelected({...selected,status:"Rejected"});setMessage("Request rejected; no course access granted.");}catch(error){setMessage(error.message);}}}>Reject Request</button>}{message && <p role="status">{message}</p>}<form method="dialog"><button>Close</button></form></dialog>
-  </section>;
+  const rows = paymentRecords(useBatches());
+  const [message, setMessage] = useState("");
+  const approval = row => <><div className="payment-detail-actions">{row.status === "Pending" && <button type="button" className="payment-approve" onClick={() => {
+    try { approvePayment(row.transactionId, "subadmin"); setMessage("Payment approved. Course assigned to student."); }
+    catch (error) { setMessage(error.message); }
+  }}>Approve Payment</button>}{row.status === "Pending" && <button className="payment-reject" onClick={()=>{try{rejectPayment(row.transactionId,"subadmin");setMessage("Request rejected; no course access granted.");}catch(error){setMessage(error.message);}}}>Reject Request</button>}</div>{message && <p className="payment-detail-alert" role="status">{message}</p>}</>;
+
+  
+  return <div className="sa-record-page"><SuperAdminRecords detailAction={approval} detailRenderer={detailRenderer} paginate filters={[["course","Courses"],["method","Payment Methods"]]} title="Payments & Verification" subtitle="Review student payment transactions and verification status." heading={<AdminHeading title="Payments & Verification" subtitle="Review student payment transactions and verification status." icon="briefcase"/>} rows={rows} columns={columns}>
+    <ReceivingAccount editable role="subadmin"/><AdminSummary items={[["Total Payments", rows.length, "briefcase"], ["Approved", rows.filter(r => r.status === "Approved").length, "check"], ["Pending", rows.filter(r => r.status === "Pending").length, "clock"], ["Rejected", rows.filter(r => r.status === "Rejected").length, "close"]]}/>
+  </SuperAdminRecords></div>;
 }

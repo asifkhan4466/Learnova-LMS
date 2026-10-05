@@ -15,12 +15,12 @@ function RoleSelection() {
     <div className="role-selection-page">
       <div className="role-selection-card">
         <div className="role-selection-header">
-          <h1>{adminChoice ? "Admin Access" : "Welcome to Learnova"}</h1>
-          <p>{adminChoice ? "Select Admin or Sub Admin to log in." : "Select your account type to continue."}</p>
+          <h1>{adminChoice ? "Super Admin Access" : "Welcome to Learnova"}</h1>
+          <p>{adminChoice ? "Select Super Admin or Admin to log in." : "Select your account type to continue."}</p>
         </div>
         <nav className="role-selection-options" aria-label="Account type">
           {roles.map(role => (
-            <Link key={role.id} to={!adminChoice && role.id === "admin" ? `/login?${adminParams}` : `/login/${role.id}${query}`} state={state}>
+            <Link key={role.id} to={!adminChoice && role.id === "admin" ? `/login?${adminParams}` : `/login/${role.path || role.id}${query}`} state={state}>
               <span>{role.name}</span><span aria-hidden="true">→</span>
             </Link>
           ))}

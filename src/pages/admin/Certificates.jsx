@@ -1,24 +1,53 @@
-﻿import "./Certificates.css";
-import { useState } from "react";
-import CertificatesManagement from "../subadmin/Certificates";
+import AdminSummary, { AdminHeading } from "../../components/AdminSummary";
+import "./Certificates.css";
+import { useState, useRef, useEffect } from "react";
 import useCertificates from "../../utils/useCertificates";
-import PublicIcon from "../../components/PublicIcon";
+import { readCertificateTemplate, saveCertificateTemplate } from "../../utils/certificateStorage";
+import { certificateDate, downloadCertificate, drawCertificate } from "../../utils/certificateDocument";
 import CertificatePreview from "../../components/CertificatePreview";
-import { certificateDate } from "../../utils/certificateDocument";
 
-export default function Certificates() {
-  const { state, records } = useCertificates();
-  const [query, setQuery] = useState("");
-  const [searched, setSearched] = useState(false);
-  const [previewId, setPreviewId] = useState(null);
-  const matches = searched && query.trim() ? records.filter(record => record.certificateId && (record.certificateId.toLowerCase().includes(query.trim().toLowerCase()) || record.studentName.toLowerCase().includes(query.trim().toLowerCase()))) : [];
-  const preview = records.find(record => record.id === previewId);
-  return <section className="admin-certificates">
-    <header className="adc-banner"><div><h1>Certificates</h1><p>Manage certificate templates, track issuance, and celebrate learner achievements.</p></div><blockquote>&ldquo;Recognizing progress,<br/>empowering brighter futures.&rdquo;<cite>&mdash; Learnova</cite></blockquote><PublicIcon name="award"/></header>
-    <div className="adc-workspace"><CertificatesManagement/>
-      <section className="adc-verify"><header><PublicIcon name="award"/><div><h2>Find Certificate</h2><p>Look up a certificate in the shared frontend records.</p></div></header><form onSubmit={event => { event.preventDefault(); setSearched(true); }}><label htmlFor="adc-search">Certificate ID or student name</label><div className="adc-search"><PublicIcon name="search"/><input id="adc-search" required value={query} onChange={event => { setQuery(event.target.value); setSearched(false); }} placeholder="Enter certificate ID or student name..."/></div><button type="submit">Search Certificate</button></form>
-      {searched && <div className="adc-results" role="status">{matches.length ? matches.map(record => <article key={record.id}><strong>{record.studentName}</strong><p>{record.courseName}</p><small>{record.certificateId} · {certificateDate(record.completionDate)}</small><span>{record.status}</span><button disabled={record.status === "Locked"} onClick={() => setPreviewId(record.id)}>Preview</button></article>) : <p>No matching certificate found.</p>}</div>}
-      <div className="adc-note"><PublicIcon name="check"/><div><strong>Course completion certificates</strong><p>Certificate details are filled automatically. Certificates unlock only when course completion requirements are met.</p></div></div></section>
-    </div>{preview && <CertificatePreview record={preview} template={state.template} onClose={() => setPreviewId(null)}/>}
-  </section>;
+function Certificates({ subadminView = false }) {
+  const { state, records, error: storageError } = useCertificates();
+  const [error, setError] = useState("");
+  const templateCanvas = useRef(null);
+  useEffect(() => {
+    if (subadminView && !state.template && templateCanvas.current) {
+      drawCertificate(templateCanvas.current, {studentName:"STUDENT NAME",courseName:"COURSE NAME",instructorName:"Instructor Name",authorizedName:"Learnova Administration",completionDate:null,certificateId:"Assigned on completion"}, null).catch(failure => setError(failure.message));
+    }
+  }, [subadminView, state.template]);
+  const [preview, setPreview] = useState(null);
+  const [details, setDetails] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [notice, setNotice] = useState("");
+  async function upload(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setBusy(true); setError(""); setNotice("");
+    try { const template = await readCertificateTemplate(file); saveCertificateTemplate(template); setNotice("Certificate template saved."); }
+    catch (failure) { setError(failure.message); }
+    finally { setBusy(false); event.target.value = ""; }
+  }
+  async function download(id) { setBusy(true); setError(""); try { await downloadCertificate(id); setNotice("Certificate download prepared."); } catch (failure) { setError(failure.message); } finally { setBusy(false); } }
+  const detail = records.find(r => r.id === details);
+  const selected = records.find(r => r.id === preview);
+  return <div className="subadmin-certificates-page">
+    {subadminView ? <AdminHeading title="Certificates" subtitle="Manage certificate templates and course completion certificates." icon="award"/> : <header className="subadmin-certificates-header"><h1>Certificates</h1><p>Manage certificate templates and course completion certificates.</p></header>}
+    {subadminView ? <AdminSummary items={[["Certificates",records.filter(r=>r.certificateId).length,"award"],["Available / Issued",records.filter(r=>r.status!=="Locked").length,"check"],["Pending Eligibility",records.filter(r=>r.status==="Locked").length,"clock"],["Templates",1,"book"]]}/> : <div className="subadmin-certificate-stats">{[["Total Certificates", records.filter(r => r.certificateId).length], ["Available / Issued", records.filter(r => r.status !== "Locked").length], ["Pending Eligibility", records.filter(r => r.status === "Locked").length], ["Certificate Templates", 1]].map(([label, count]) => <div key={label}><span>{label}</span><strong>{count}</strong></div>)}</div>}
+    <section className="subadmin-certificate-template">
+      <div><h2>Certificate Template</h2><p>{state.template ? state.template.name : "Built-in Learnova certificate"}</p><p>Upload a blank PNG or JPG/JPEG template, up to 2 MB. Student and course details are placed automatically over the image.</p>
+        <div className="subadmin-certificate-actions"><label className="certificate-upload-button">{busy ? "Please wait…" : state.template ? "Replace Template" : "Upload Certificate Template"}<input type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" disabled={busy} onChange={upload} aria-label="Upload Certificate Template" /></label><button type="button" onClick={() => setPreview("template")}>Preview Template</button></div>
+      </div>
+      {state.template ? <img src={state.template.dataUrl} alt="Current certificate template" /> : subadminView ? <canvas ref={templateCanvas} className="sa-template-canvas" aria-label="Learnova certificate template with automatic fields"/> : <div className="certificate-default-template"><img src="/Logo.png" alt="Learnova" /><strong>CERTIFICATE OF COMPLETION</strong><span>Automatic student and course information</span></div>}
+    </section>
+    {(error || storageError) && <p role="alert">{error || storageError}</p>}{notice && <p role="status">{notice}</p>}
+    <section className="subadmin-certificate-records"><h2>Certificate Records</h2><p>Certificates unlock at 100% progress or Completed status. Issued means a download has been prepared.</p>
+      <div className="subadmin-certificate-table-wrap" tabIndex="0" aria-label="Certificate records"><table><thead><tr>{["Student", "Student ID", "Course", "Instructor", "Completion Date", "Certificate ID", "Status", "Action"].map(label => <th key={label}>{label}</th>)}</tr></thead><tbody>{records.map(record => <tr key={record.id}>
+        <td>{record.studentName}</td><td>{record.studentId}</td><td>{record.courseName}</td><td>{record.instructorName}</td><td>{certificateDate(record.completionDate)}</td><td className="certificate-id-cell">{record.certificateId || "Pending"}</td><td><span className={`certificate-status certificate-status-${record.status.toLowerCase()}`}>{record.status}</span></td>
+        <td><div className="subadmin-certificate-actions"><button type="button" disabled={record.status === "Locked"} onClick={() => setPreview(record.id)}>Preview</button><button type="button" disabled={record.status === "Locked" || busy} onClick={() => download(record.id)}>Download</button><button type="button" onClick={() => setDetails(record.id)}>View Details</button></div></td>
+      </tr>)}</tbody></table></div>
+    </section>
+    {detail && <section className="certificate-record-details"><h2>Certificate Details</h2><p>{detail.studentName} · {detail.studentId}</p><p>{detail.courseName} · Instructor: {detail.instructorName}</p><p>Progress: {detail.progress}% · Course status: {detail.status === "Locked" ? detail.progress === 100 ? "Course unavailable" : "Not eligible" : "Completed"}</p><p>Authorized By: {detail.authorizedName}</p><p>Completion: {certificateDate(detail.completionDate)}</p><p>Certificate ID: {detail.certificateId || "Pending completion"}</p><button type="button" onClick={() => setDetails(null)}>Close Details</button></section>}
+    {preview && <CertificatePreview record={selected} template={state.template} templateOnly={preview === "template"} onClose={() => setPreview(null)} />}
+  </div>;
 }
+export default Certificates;
